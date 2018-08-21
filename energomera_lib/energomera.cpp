@@ -34,7 +34,8 @@ double readDoubleInBracet(char* buf, uint16_t &idx) {
   while (buf[++idx] != ')');
   buf[idx] = 0;
 
-  return String(smallbuf).toDouble();
+  //return String(smallbuf).toDouble();
+  return atof(smallbuf);
 }
 void readDoubles(char* buf, double * output, uint16_t sz) {
   uint16_t idx = 0;
