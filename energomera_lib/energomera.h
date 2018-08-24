@@ -34,9 +34,13 @@ class Energomera {
     long openSession() ;
     Energy_Struct readEnergy() ;
     VI_Struct readVoltage();
-    VI_Struct readCurrent() ;
+    VI_Struct readCurrent();
+    VI_Struct readPowerOnPhase();
+    VI_Struct CORUU();
+    VI_Struct CORIU();
     double readPower();
     double readFreq();
+    long readFullSerial();
 
   private:
     void LL_writeToMeter(const byte * command, uint16_t sz);
