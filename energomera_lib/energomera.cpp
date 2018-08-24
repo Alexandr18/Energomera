@@ -13,7 +13,14 @@ const byte cmd5[] = {0x81, 0xd2, 0xb1, 0x82, 0x50, 0xcf, 0xd7, 0xc5, 0x50, 0x28,
 const byte cmd6[] = {0x81, 0xd2, 0xb1, 0x82, 0xc6, 0xd2, 0xc5, 0xd1, 0x55, 0x28, 0xa9, 0x03, 0x5c};
 //ток
 const byte cmd7[] = {0x81, 0xd2, 0xb1, 0x82, 0xc3, 0x55, 0xd2, 0xd2, 0xc5, 0x28, 0xa9, 0x03, 0x5a};
+//полный серийник
+const byte cmd8[]={0x81,0xD2,0xB1,0x82,0x53,0x4E,0x55,0x4D,0x42,0x28,0xA9,0x03,0xDE};
+//мощность по фазам
+const byte cmd9[]={0x81 ,0xD2 ,0xB1 ,0x82 ,0x50 ,0xCF ,0xD7 ,0x50 ,0x50 ,0x28 ,0xA9 ,0x03 ,0x6F};
 
+const byte cmd10[]={0x81,0xD2,0xB1,0x82,0xC3,0xCF,0xD2,0x55,0x55,0x28,0xA9,0x03,0xE7};
+
+const byte cmd11[]={0x81,0xD2,0xB1,0x82,0xC3,0xCF,0xD2,0xC9,0x55,0x28,0xA9,0x03,0xDB};
 char mybuf[512] = {0};
 
 
@@ -36,6 +43,7 @@ double readDoubleInBracet(char* buf, uint16_t &idx) {
 
   //return String(smallbuf).toDouble();
   return atof(smallbuf);
+
 }
 void readDoubles(char* buf, double * output, uint16_t sz) {
   uint16_t idx = 0;
@@ -85,7 +93,8 @@ long Energomera::openSession() {
   flushBuffer();
 
   LL_writeToMeter(cmd2, sizeof(cmd2));
-  readIntoBuffer(mybuf, 512);
+  flushBuffer();
+  //readIntoBuffer(mybuf, 512);
   return readLongInBracet(mybuf);
 }
 
@@ -128,7 +137,39 @@ VI_Struct Energomera::readCurrent() {
   output.C = vtgs[2];
   return output;
 }
-
+VI_Struct Energomera::readPowerOnPhase() {
+  LL_writeToMeter(cmd9, sizeof(cmd9));
+  double vtgs[3] = {0};
+  readIntoBuffer(mybuf, 512);
+  readDoubles(mybuf, vtgs, 3);
+  VI_Struct output;
+  output.A = vtgs[0];
+  output.B = vtgs[1];
+  output.C = vtgs[2];
+  return output;
+}
+VI_Struct Energomera::CORUU() {
+  LL_writeToMeter(cmd10, sizeof(cmd10));
+  double vtgs[3] = {0};
+  readIntoBuffer(mybuf, 512);
+  readDoubles(mybuf, vtgs, 3);
+  VI_Struct output;
+  output.A = vtgs[0];
+  output.B = vtgs[1];
+  output.C = vtgs[2];
+  return output;
+}
+VI_Struct Energomera::CORIU() {
+  LL_writeToMeter(cmd11, sizeof(cmd11));
+  double vtgs[3] = {0};
+  readIntoBuffer(mybuf, 512);
+  readDoubles(mybuf, vtgs, 3);
+  VI_Struct output;
+  output.A = vtgs[0];
+  output.B = vtgs[1];
+  output.C = vtgs[2];
+  return output;
+}
 
 double Energomera::readPower() {
   LL_writeToMeter(cmd5, sizeof(cmd5));
@@ -137,7 +178,14 @@ double Energomera::readPower() {
   readDoubles( mybuf, &out, 1);
   return out;
 }
-
+//------
+long Energomera::readFullSerial(){
+  LL_writeToMeter(cmd8, sizeof(cmd8));
+  flushBuffer();
+  //readIntoBuffer(mybuf, 512);
+  return readLongInBracet(mybuf);
+}
+//------
 
 double Energomera::readFreq() {
   LL_writeToMeter(cmd6, sizeof(cmd6));
